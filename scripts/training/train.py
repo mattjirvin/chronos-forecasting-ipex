@@ -71,17 +71,17 @@ def get_training_job_info() -> Dict:
     job_info = {}
 
     # CUDA info
-    job_info["cuda_available"] = torch.cuda.is_available()
-    if torch.cuda.is_available():
-        job_info["device_count"] = torch.cuda.device_count()
+    job_info["cuda_available"] = torch.xpu.is_available()
+    if torch.xpu.is_available():
+        job_info["device_count"] = torch.xpu.device_count()
 
         job_info["device_names"] = {
-            idx: torch.cuda.get_device_name(idx)
-            for idx in range(torch.cuda.device_count())
+            idx: torch.xpu.get_device_name(idx)
+            for idx in range(torch.xpu.device_count())
         }
         job_info["mem_info"] = {
-            idx: torch.cuda.mem_get_info(device=idx)
-            for idx in range(torch.cuda.device_count())
+            idx: torch.xpu.mem_get_info(device=idx)
+            for idx in range(torch.xpu.device_count())
         }
 
     # DDP info
@@ -485,7 +485,7 @@ def main(
     seed: Optional[int] = None,
 ):
     if tf32 and not (
-        torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8
+        torch.xpu.is_available() and torch.xpu.get_device_capability()[0] >= 8
     ):
         # TF32 floating point format is available only on NVIDIA GPUs
         # with compute capability 8 and above. See link for details.
